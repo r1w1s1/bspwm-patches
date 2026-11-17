@@ -1,0 +1,31 @@
+diff --git a/src/events.c b/src/events.c
+index a90f21f..3843a44 100644
+--- a/src/events.c
++++ b/src/events.c
+@@ -361,8 +361,11 @@ void focus_in(xcb_generic_event_t *evt)
+ 			/* Some clients expect the window manager to refocus the
+ 			   focused window in this case */
+ 			bool pff = pointer_follows_focus;
++			bool ar = auto_raise;
+ 			pointer_follows_focus = false;
++			auto_raise = false;
+ 			focus_node(mon, mon->desk, mon->desk->focus);
++			auto_raise = ar;
+ 			pointer_follows_focus = pff;
+ 			return;
+ 		}
+diff --git a/src/messages.c b/src/messages.c
+index 666845b..813ba47 100644
+--- a/src/messages.c
++++ b/src/messages.c
+@@ -663,7 +663,10 @@ void cmd_desktop(char **args, int num, FILE *rsp)
+ 					break;
+ 				}
+ 			}
++			bool ar = auto_raise;
++			auto_raise = false;
+ 			focus_node(dst.monitor, dst.desktop, NULL);
++			auto_raise = ar;
+ 		} else if (streq("-a", *args) || streq("--activate", *args)) {
+ 			coordinates_t dst = trg;
+ 			if (num > 1 && *(args + 1)[0] != OPT_CHR) {
